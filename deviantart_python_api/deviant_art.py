@@ -183,9 +183,10 @@ if __name__ == "__main__":
     # print(da.browse_daily_deviations())
     # print(da.browse_newest())
     # print(da.browse_popular())
-    # print(da.browse_tag("anime"))
+    print(da.browse_tag("anime"))
     # print(da.browse_search_tags("ani"))
     # print(da.browse_topic("3d"))
     # print(da.browse_topics())
     # print(da.browse_toptopics())
     # print(da.browse_user_journals("cryptid-creations"))
+
