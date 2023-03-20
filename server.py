@@ -9,4 +9,4 @@ def wake_up():
 
 
 bot.start_bot()
-#schedule.every(5).minute(wake_up)
+schedule.every(5).minute(wake_up)
