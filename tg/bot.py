@@ -7,6 +7,6 @@ from commands import register_handlers
 async def on_startup(_):
     print("Бот онлайн!")
 
-
-register_handlers(dispatcher)
-executor.start_polling(dispatcher, skip_updates=True, on_startup=on_startup)
+def start_bot():
+    register_handlers(dispatcher)
+    executor.start_polling(dispatcher, skip_updates=True, on_startup=on_startup)
