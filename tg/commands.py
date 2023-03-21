@@ -1,4 +1,4 @@
-from create_bot import dispatcher
+from tg.create_bot import dispatcher
 from aiogram import types, Dispatcher
 
 async def start(message : types.Message):
