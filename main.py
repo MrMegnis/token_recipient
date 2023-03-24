@@ -1,32 +1,19 @@
-from flask import Flask, render_template, redirect
-
+from flask import Flask
 # from tg import bot
-from forms.loginform import LoginForm
+from dotenv import load_dotenv
+from data import db_session
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'mega_secret_key'
-
 
 @app.route('/')
-@app.route('/home')
-def home():
-    return render_template('base.html')
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        return redirect('/success')
-    return render_template('login.html', title='Авторизация', form=form)
-
-
-@app.route('/success')
-def success():
-    return render_template('success.html')
+def hello_world():
+    return 'Hello from Flask!'
 
 
 if __name__ == "__main__":
+    load_dotenv('.env')
+    db_session.global_init()
+    db_sess = db_session.create_session()
     # bot.start_bot()
-    app.run(host="0.0.0.0", port=3000)
+    app.run()
