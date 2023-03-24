@@ -1,5 +1,7 @@
 from flask import Flask
-from tg import bot
+# from tg import bot
+from dotenv import load_dotenv
+from data import db_session
 
 app = Flask(__name__)
 
@@ -10,5 +12,8 @@ def hello_world():
 
 
 if __name__ == "__main__":
-    bot.start_bot()
+    load_dotenv('.env')
+    db_session.global_init()
+    db_sess = db_session.create_session()
+    # bot.start_bot()
     app.run()
