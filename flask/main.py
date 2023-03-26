@@ -5,7 +5,7 @@ from flask import Flask, render_template, redirect
 from flask_login import LoginManager, login_user, login_required, logout_user
 
 from data import db_session
-from data.users import User
+from data.users import Users
 from forms.loginform import LoginForm
 from forms.registerform import RegisterForm
 
@@ -20,7 +20,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+    return db_sess.query(Users).get(user_id)
 
 
 @app.route('/')
@@ -34,13 +34,13 @@ def register():
     form = RegisterForm()
     db_sess = db_session.create_session()
     if form.validate_on_submit():
-        if db_sess.query(User).filter(User.email == form.email.data).first():
+        if db_sess.query(Users).filter(Users.email == form.email.data).first():
             return render_template('register.html', title='Регистрация', form=form,
                                    message="Пользователь с таким email уже существует")
-        if db_sess.query(User).filter(User.name == form.username.data).first():
+        if db_sess.query(Users).filter(Users.name == form.username.data).first():
             return render_template('register.html', title='Регистрация', form=form,
                                    message="Пользователь с таким логином уже существует")
-        user = User(
+        user = Users(
             email=form.email.data,
             name=form.username.data
         )
@@ -63,7 +63,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.name == form.username.data).first()
+        user = db_sess.query(Users).filter(Users.name == form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect('/success')
