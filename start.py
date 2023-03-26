@@ -1,6 +1,6 @@
 import daemon
 
-import main
+from flask import main
 from tg import bot
 
 with daemon.DaemonContext():

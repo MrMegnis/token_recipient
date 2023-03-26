@@ -1,13 +1,15 @@
 FROM python:3
 
 RUN mkdir /app
-COPY requirements.txt /app/requirements.txt
+COPY ../requirements.txt ./app/requirements.txt
 WORKDIR /app
 
 run pip install --upgrade pip
 run pip install -r requirements.txt
 
-COPY . /app
+ENV PYTHONPATH "${PYTHONPATH}:app"
 
-EXPOSE 3000
-CMD python ./main.py
+EXPOSE 5000
+
+COPY .. /app
+
