@@ -24,3 +24,4 @@ if __name__ == "__main__":
     db_session.global_init()
     app.register_blueprint(token_recipient.blueprint)
     app.run()
+
