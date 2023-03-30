@@ -9,6 +9,7 @@ import flask
 import requests
 from flask import request, jsonify, render_template
 from sqlalchemy import update
+
 sys.path.append('../app')
 from data import db_session
 from data.users import Users
@@ -20,8 +21,8 @@ blueprint = flask.Blueprint(
 )
 
 
-@blueprint.route('/api/set_token', methods=["GET"])
-def set_token():
+@blueprint.route('/api/set_authorization_code_flow_token', methods=["GET"])
+def set_authorization_code_flow_token():
     code = request.args.get("code")
     state = request.args.get("state")
     print(request, code)
@@ -40,6 +41,18 @@ def set_token():
     db_sess.commit()
     # return render_template('success.html', title='Успех')
     return "success"
+
+
+@blueprint.route('/api/set_implicit_flow_token', methods=["GET"])
+def set_implicit_flow_token():
+    access_token = request.args.get("access_token")
+    state = request.args.get("state")
+    db_sess = db_session.create_session()
+    db_sess.execute(update(Users).values(vk_access_token=access_token).where(Users.id == state))
+    db_sess.commit()
+    # return render_template('success.html', title='Успех')
+    return "success"
+
 
 @blueprint.route('/api/get_token/<int:user_id>', methods=["GET"])
 def get_token(user_id):
