@@ -1,6 +1,8 @@
+import os
+
 import flask
 import requests
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from sqlalchemy import update
 
 from data import db_session
@@ -12,24 +14,27 @@ blueprint = flask.Blueprint(
     template_folder='templates'
 )
 
-#https://oauth.vk.com/authorize?client_id=51593041&client_secret=9DqqHq7CTmThwEGyPEM2&redirect_uri=https://ca55-2a01-540-316-8000-716e-d8db-1cb3-805b.eu.ngrok.io/api/post_token&scope=friends&response_type=code&state="1"
-@blueprint.route('/api/post_token', methods=["GET"])
-def post_token():
+
+@blueprint.route('/api/set_token', methods=["GET"])
+def set_token():
     code = request.args.get("code")
+    state = request.args.get("state")
     print(request, code)
     url = "https://oauth.vk.com/access_token"
     params = {
-        "client_id" : "51593041",
-        "client_secret" : "9DqqHq7CTmThwEGyPEM2",
-        "redirect_uri" : "https://ca55-2a01-540-316-8000-716e-d8db-1cb3-805b.eu.ngrok.io/api/post_token",
-        "code" : code
+        "client_id": os.environ.get('VK_CLIENT_ID'),
+        "client_secret": os.environ.get('VK_CLIENT_SECRET'),
+        "redirect_uri": os.environ.get('SET_TOKEN_SITE_LINK') + os.environ.get('SET_TOKEN_PATH'),
+        "code": code
     }
     response = requests.get(url, params=params).json()
     print(response)
-    # db_sess = db_session.create_session()
-    # update(Users).where(Users.id == request["state"]).values(vk_access_token=request["access_token"])
-    return "success, token: " + response["access_token"]
-
+    # return response
+    db_sess = db_session.create_session()
+    db_sess.execute(update(Users).values(vk_access_token=response["access_token"]).where(Users.id == state))
+    db_sess.commit()
+    # return render_template('success.html', title='Успех')
+    return "success"
 
 @blueprint.route('/api/get_token/<int:user_id>', methods=["GET"])
 def get_token(user_id):

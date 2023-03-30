@@ -1,13 +1,17 @@
+import os
+import datetime
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request
 
-# from tg import bot
-from flask_login import LoginManager, login_user, login_required, logout_user
+import logging
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from data import db_session
 from data.users import Users
 from forms.loginform import LoginForm
+from forms.post_form import PostForm
 from forms.registerform import RegisterForm
+from VK import vk_main
 
 app = Flask(__name__)
 
@@ -82,7 +86,42 @@ def logout():
 
 @app.route('/success')
 def success():
-    return render_template('success.html')
+    return render_template('success.html', title='Успех')
+
+
+@app.route('/post', methods=['GET', 'POST'])
+@login_required
+def post():
+    form = PostForm()
+    if form.validate_on_submit():
+        logging.warning(form.data)
+        id = form.id.data
+        tag = form.tag.data
+        images = list()
+        # images = form.images.data
+        # raw_images = request.files.getlist(form.images.name)
+        raw_images = form.images.data
+        for raw_image in raw_images:
+            image = raw_image.stream.read()
+            images.append(image)
+            # logging.warning(image)
+        # logging.warning(images)
+        start_on = form.start_on.data
+        interval = form.interval.data
+        posts = vk_main.create_posts(os.getenv('VK_ACCESS_TOKEN'), images, id, start_on, interval)
+        for post in posts:
+            post.post()
+        logging.warning("POSTED!!!!")
+        # logging.warning(id, type(id))
+        # logging.warning(tag, type(tag))
+        # logging.warning(images, type(images))
+        # logging.warning(start_on, type(start_on))
+        # logging.warning(interval, type(interval))
+        # vk_main.create_post(os.environ.get('VK_ACCESS_TOKEN'), owner_id=id, from_group="1", message="aaaa")
+        # vk_main.create_post(os.environ.get('VK_ACCESS_TOKEN'), "-219613882", "1", "aaaa")
+        return render_template('success.html', title='Успех')
+    # return f"{current_user.name}"
+    return render_template('post.html', title='Пост', form=form)
 
 
 if __name__ == "__main__":
@@ -90,4 +129,4 @@ if __name__ == "__main__":
     db_session.global_init()
     db_sess = db_session.create_session()
     # bot.start_bot()
-    app.run(host="0.0.0.0", port=3000)
+    app.run(host="0.0.0.0", port=3000, debug=True)
