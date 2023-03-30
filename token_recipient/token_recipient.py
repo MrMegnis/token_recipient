@@ -1,10 +1,15 @@
 import os
+import sys
 
+directory = os.getcwd()
+
+print(directory)
+print(os.listdir())
 import flask
 import requests
 from flask import request, jsonify, render_template
 from sqlalchemy import update
-
+sys.path.append('../app')
 from data import db_session
 from data.users import Users
 
